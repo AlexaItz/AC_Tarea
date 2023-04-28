@@ -4,6 +4,16 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
+
 # ╔═╡ 787e065a-3dbc-4d78-8d77-a6f14b394ecc
 using Plots, PlutoUI
 
@@ -134,19 +144,19 @@ md"""Visualizamos la gráfica de una función y la recta tangente en un punto"""
 
 # ╔═╡ e4583d08-6ea8-470f-ae97-aa2e3a6d1d9f
 begin
-f(x)= cos(x)
-	x0 = 2
-	y0 = f(x0)
-	pendiente = derivada(z,n)
-recta_tangente(x)= pendiente*(x-x0)+y0
-	x_range = x0 - 4:0.01:x0+4
-plot(x_range,f.(x_range), label="cos(x)")
-plot!(x_range, recta_tangente.(x_range), label = "Recta tangente")
+f(x)= cos(x)                                            # Definimos una función
+	x0 = 2                                              # damos una valor para x
+	y0 = f(x0)                                          # damos el valor de la función en el punto x
+	pendiente = derivada(z,n)                           # definimos la pendiente como la derivada en ese punto
+recta_tangente(x)= pendiente*(x-x0)+y0                  # definimos la recta tangente
+	x_range = x0 - 4:0.01:x0+4                          # definimos el rango de x
+plot(x_range,f.(x_range), label="cos(x)")               # graficamos la función
+plot!(x_range, recta_tangente.(x_range), label = "Recta tangente")     # graficamos la recta tangente
 end
 
 # ╔═╡ 7c362d27-9611-4e09-8882-0f5f717f6b98
 begin
-	print("La pendiente de la función cos(x) en 2 es:")
+	print("La pendiente de la función cos(x) en 2 es:") 
 	println(pendiente)
 end
 
@@ -155,13 +165,13 @@ md"""Lo probamos para otras funciones"""
 
 # ╔═╡ 12a42fb4-1ad2-497e-8fca-460631bb088c
 begin
-fun(x)= 6x^5 + 4x^2 -4 
-	x1 = 5
-	y1 = f(x1)
-	pendiente1 = derivada(g,x)
-recta_tangente1(x)= pendiente1*(x-x1)+y1
-	x_range1 = x1- 6:0.01:x1+6
-plot(x_range1,fun.(x_range1), label="F(x)")
+fun(x)= 6x^5 + 4x^2 -4                                         #Definimos la función
+	x1 = 5                                                     # para un valor de x
+	y1 = f(x1)                                                 # definimos el valor de la función en ese punto
+	pendiente1 = derivada(g,x)                                 #definimos la pendiente
+recta_tangente1(x)= pendiente1*(x-x1)+y1                       # definimos la recta tangente 
+	x_range1 = x1- 6:0.01:x1+6                                 # definimos el rango n x
+plot(x_range1,fun.(x_range1), label="F(x)")                    # graficamos la función y despues la recta tangente
 plot!(x_range1, recta_tangente1.(x_range1), label = "Recta tangente")
 end
 
@@ -173,7 +183,7 @@ end
 
 # ╔═╡ 820c5af3-44af-4aab-adab-2fc9b3a7c5a6
 begin
-func(x)= log(e) 
+func(x)= log(e)                          # Se reaiza el mismo proceso que en los dos anteriores pero para la función logaritmo
 	x2 = 1
 	y2 = f(x2)
 	pendiente2 = derivada2(k,e)
@@ -187,6 +197,48 @@ end
 begin
 	print("La pendiente de la función log(x) es:")
 	println(pendiente2)
+end
+
+# ╔═╡ 624b4dca-5c62-4942-a293-68f497b4eb6c
+md"""Realizamos una gráfica que a partir de un deslizador observemos la recta tangente en diversos puntos"""
+
+# ╔═╡ 61702498-0ffe-464d-ad4b-1f4363cd7b8b
+funciond(X)= 4-X^2       # Definimos la función
+
+# ╔═╡ 4c3f604b-45e5-48df-a357-d2049a9f84cb
+@bind X Slider(-2.0:0.01:2.0)          # presentamos el deslizador para puntos en el intervalo deseado
+
+# ╔═╡ d3751661-2824-49cf-a21b-7bcc6c778b66
+I = funciond(X)                 # definimos I como el valor de la fnción en diversos puntos
+
+# ╔═╡ 7a29f71a-d958-4089-a46a-f1a514f20ef2
+dxdy = slope = derivada(funciond,X)       # definimos el valor de la derivada como la pendiente a partir de la función derivada
+
+# ╔═╡ 9291f9a3-6d29-428c-a895-b1040d244379
+md"""Conociendo que la recta tangente se define como $y= mx +b$ definimos a la pendiente m como el slope y a la intersección con el eje y que es inter"""
+
+# ╔═╡ 215fdddc-a83b-4c6c-a444-3515c37b722a
+inter = I - slope*X            # definimo la intersección con el eje y
+
+# ╔═╡ 1e46d29c-6331-4517-8e6c-0b3f7f106521
+x_left = X-1              # definimos la coordenada izquierda en x
+
+# ╔═╡ a1a66911-23a1-4400-b400-bc86c883ada0
+x_right = X+1              # definimos la coordenada derecha en x
+
+# ╔═╡ 63c452b3-eb0d-47b9-b38d-c3c806505567
+y_left = slope*x_left +inter          # definimos la coordenada izquierda en y
+
+# ╔═╡ 933a2b20-070e-4393-9370-7c86589cc465
+y_right = slope*x_right + inter      # definimos la coordenada derecha en y
+
+# ╔═╡ 45982481-523e-4fde-9cec-1653604ca043
+begin
+	#Graficamos la función 
+	plot(funciond,linewidth=2,legend = false, title = "Función y su tangente en  diversos puntos", xaxis ="x", yaxis ="f(x)", formatter = :plain, widen =true, xlims = (-2.5,2.5), ylims = (-6,6), aspect_radio =2)
+	# graficamos larecta tagente a partir de las coordenadas definidas en función de la pendiente, intersección, las coordenadas en cada punto 
+	plot!([x_left,x_right], [y_left, y_right], linewidth =2)
+	scatter!((x, y), markersize =6)
 end
 
 # ╔═╡ c9037360-295f-4ac1-932b-3c4d656046d1
@@ -1195,7 +1247,7 @@ version = "1.4.1+0"
 
 # ╔═╡ Cell order:
 # ╠═787e065a-3dbc-4d78-8d77-a6f14b394ecc
-# ╠═bbac0962-90f2-43a8-869c-92413d00b76d
+# ╟─bbac0962-90f2-43a8-869c-92413d00b76d
 # ╟─9852e1b5-ae63-40ea-bbad-a29359190d72
 # ╠═1df7804b-bf9a-484f-afa1-4007c7b01f8c
 # ╠═7636b28b-36c1-454f-9e78-8b6be82973b7
@@ -1218,6 +1270,18 @@ version = "1.4.1+0"
 # ╠═30a412ee-5140-4944-a8d2-67adf0a0a09a
 # ╠═820c5af3-44af-4aab-adab-2fc9b3a7c5a6
 # ╠═8a6c3cb6-8bf9-4e29-b582-37b8287061a9
+# ╟─624b4dca-5c62-4942-a293-68f497b4eb6c
+# ╠═61702498-0ffe-464d-ad4b-1f4363cd7b8b
+# ╠═4c3f604b-45e5-48df-a357-d2049a9f84cb
+# ╠═d3751661-2824-49cf-a21b-7bcc6c778b66
+# ╠═7a29f71a-d958-4089-a46a-f1a514f20ef2
+# ╟─9291f9a3-6d29-428c-a895-b1040d244379
+# ╠═215fdddc-a83b-4c6c-a444-3515c37b722a
+# ╠═1e46d29c-6331-4517-8e6c-0b3f7f106521
+# ╠═a1a66911-23a1-4400-b400-bc86c883ada0
+# ╠═63c452b3-eb0d-47b9-b38d-c3c806505567
+# ╠═933a2b20-070e-4393-9370-7c86589cc465
+# ╠═45982481-523e-4fde-9cec-1653604ca043
 # ╟─c9037360-295f-4ac1-932b-3c4d656046d1
 # ╠═c905b5dc-a47b-4141-8972-a8e43607afd8
 # ╠═ffe45ec8-0886-46d3-b22d-8bba9acddca4
